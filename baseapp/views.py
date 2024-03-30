@@ -15,12 +15,16 @@ def loginPage(request):
     if request.method == 'POST':
         email = request.POST.get('email').lower()
         password = request.POST.get('password')
+
         try:
             user = User.objects.get(email=email)
+            print(user)
         except:
             messages.error(request, 'User does not exist')
 
+        print(user.email)
         user = authenticate(request, email=email, password=password)
+        print(user)
 
         if user is not None:
             login(request, user)
@@ -37,11 +41,12 @@ def logoutPage(request):
 
 def registeruser(request):
     context = {'form': MyUserCreationForm()}
-
+    form = MyUserCreationForm()
     if request.method =='POST':
         form = MyUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit = False)
+            user.email = user.email.lower()
             user.username = user.username.lower()
             user.save()
             login(request, user)
@@ -98,12 +103,13 @@ def createRoom(request):
     if request.method == 'POST':
         topic_name = request.POST.get('topic')
         topic, created = Topic.objects.get_or_create(name=topic_name)
-        Room.objects.create(
+        new_room = Room.objects.create(
             host=request.user,
             topic=topic, 
             name=request.POST.get('name'), 
-            description=request.POST.get('description'),
+            description=request.POST.get('description')
         )
+        new_room.participants.add(request.user)
         return redirect('home')
 
     context = {

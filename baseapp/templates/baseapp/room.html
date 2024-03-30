@@ -86,7 +86,7 @@
                     <div class="thread__author">
                       <a href="{% url 'user-profile' message.user.id %}" class="thread__authorInfo">
                         <div class="avatar avatar--small">
-                          <img src="{{room.host.avatar.url}}" />
+                          <img src="{{message.user.avatar.url}}" />
                         </div>
                         <span>@{{message.user.username}}</span>
                       </a>
@@ -116,7 +116,9 @@
           <div class="room__message">
             <form action="" method="POST">
               {% csrf_token %}
+              {% if user.is_authenticated %}
               <input name="body" placeholder="Write your message here..." />
+              {% endif %}
             </form>
           </div>
         </div>
